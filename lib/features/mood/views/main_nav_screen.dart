@@ -2,49 +2,6 @@ import 'package:final_project/features/mood/views/home_screen.dart';
 import 'package:final_project/features/mood/views/post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-// import 'home_screen.dart';
-// import 'post_screen.dart';
-
-// class MainNavScreen extends StatefulWidget {
-//   const MainNavScreen({super.key});
-
-//   static const tabs = ["", "post"]; // "/" , "/post"
-
-//   @override
-//   State<MainNavScreen> createState() => _MainNavScreenState();
-// }
-
-// class _MainNavScreenState extends State<MainNavScreen> {
-//   int _selectedIndex = 0;
-
-//   void _onTap(int index) {
-//     context.go("/${MainNavScreen.tabs[index]}");
-//     setState(() => _selectedIndex = index);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Stack(
-//         children: [
-//           Offstage(offstage: _selectedIndex != 0, child: const HomeScreen()),
-//           Offstage(
-//             offstage: _selectedIndex != 1,
-//             // child: const PostScreen(),
-//           ),
-//         ],
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         currentIndex: _selectedIndex,
-//         onTap: _onTap,
-//         items: const [
-//           BottomNavigationBarItem(icon: Icon(Icons.home)),
-//           BottomNavigationBarItem(icon: Icon(Icons.edit)),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -86,18 +43,45 @@ class _MainNavScreenState extends State<MainNavScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onTap,
-        backgroundColor: _bg,
-        elevation: 0,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: ""),
-        ],
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onTap,
+      //   backgroundColor: _bg,
+      //   elevation: 0,
+      //   selectedItemColor: Colors.black,
+      //   unselectedItemColor: Colors.black,
+      //   type: BottomNavigationBarType.fixed,
+      //   items: const [
+      //     BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
+      //     BottomNavigationBarItem(icon: Icon(Icons.edit), label: ""),
+      //   ],
+      // ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Colors.black, width: 1.0)),
+        ),
+        padding: const EdgeInsets.only(top: 15), // 🔥 구분선과 아이콘 거리
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onTap,
+          backgroundColor: _bg,
+          elevation: 0,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ""),
+            BottomNavigationBarItem(icon: Icon(Icons.edit), label: ""),
+            // BottomNavigationBarItem(
+            //   icon: FaIcon(FontAwesomeIcons.house),
+            //   label: "",
+            // ),
+            // BottomNavigationBarItem(
+            //   icon: FaIcon(FontAwesomeIcons.pen),
+            //   label: "",
+            // ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:final_project/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -63,27 +65,53 @@ class HomeScreen extends StatelessWidget {
                   text: text,
                   timeAgo: time,
                   cardColor: _card,
+                  // onLongPress: () async {
+                  //   // TODO: 나중에 삭제 다이얼로그 + Firestore delete로 교체
+                  //   await showDialog(
+                  //     context: context,
+                  //     builder: (_) => AlertDialog(
+                  //       title: const Text("Delete note"),
+                  //       content: const Text(
+                  //         "Are you sure you want to do this?",
+                  //       ),
+                  //       actions: [
+                  //         TextButton(
+                  //           onPressed: () => Navigator.pop(context),
+                  //           child: const Text("Cancel"),
+                  //         ),
+                  //         TextButton(
+                  //           onPressed: () => Navigator.pop(context),
+                  //           child: const Text("Delete"),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   );
+                  // },
                   onLongPress: () async {
-                    // TODO: 나중에 삭제 다이얼로그 + Firestore delete로 교체
-                    await showDialog(
+                    final result = await showCupertinoModalPopup<String>(
                       context: context,
-                      builder: (_) => AlertDialog(
+                      builder: (context) => CupertinoActionSheet(
                         title: const Text("Delete note"),
-                        content: const Text(
+                        message: const Text(
                           "Are you sure you want to do this?",
                         ),
                         actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("Cancel"),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
+                          CupertinoActionSheetAction(
+                            isDestructiveAction: true,
+                            onPressed: () => Navigator.pop(context, "delete"),
                             child: const Text("Delete"),
                           ),
                         ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () => Navigator.pop(context, "cancel"),
+                          child: const Text("Cancel"),
+                        ),
                       ),
                     );
+
+                    if (result == "delete") {
+                      // TODO: Firestore delete 연결
+                    }
                   },
                 );
               },
@@ -127,6 +155,7 @@ class _MoodCard extends StatelessWidget {
               color: cardColor,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: Colors.black, width: 2.2),
+              boxShadow: const [kShadow],
             ),
             child: RichText(
               text: TextSpan(

@@ -1,3 +1,4 @@
+import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -59,20 +60,47 @@ class PostScreenState extends State<PostScreen> {
             ),
             const SizedBox(height: 10),
 
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       border: Border.all(color: Colors.black, width: 2.2),
+            //       // borderRadius: BorderRadius.circular(12),,
+            //       boxShadow: const [kShadow],
+            //       borderRadius: BorderRadius.circular(kBoxRadius),
+            //     ),
+            //     child: TextField(
+            //       controller: _controller,
+            //       maxLines: 6,
+            //       decoration: const InputDecoration(
+            //         hintText: "Write it down here!",
+            //         border: InputBorder.none,
+            //         contentPadding: EdgeInsets.all(14),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
+                height: 170, // 두 번째 스샷 느낌: 낮고 납작
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2.2),
-                  borderRadius: BorderRadius.circular(12),
+                  color: kBgColor, // ✅ 중요: 박스 배경색 채우기
+                  border: Border.all(color: kBorderColor, width: 2.2),
+                  borderRadius: BorderRadius.circular(kBoxRadius),
+                  // ✅ 두 번째 스샷은 그림자 거의 없음 → 제거
+                  boxShadow: const [kShadow],
+                  // boxShadow: const [kSoftShadow],
                 ),
+                padding: const EdgeInsets.all(14),
                 child: TextField(
                   controller: _controller,
-                  maxLines: 6,
+                  maxLines: null,
+                  expands: true, // ✅ 박스 높이만큼 채우기
                   decoration: const InputDecoration(
                     hintText: "Write it down here!",
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(14),
+                    isDense: true,
                   ),
                 ),
               ),
@@ -105,7 +133,10 @@ class PostScreenState extends State<PostScreen> {
                       height: 38,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: selected ? Colors.white : Colors.transparent,
+                        // color: Colors
+                        //     .white, //
+                        color: selected ? Colors.white : Colors.grey,
+                        boxShadow: const [kShadow],
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.black, width: 2),
                       ),
@@ -129,6 +160,7 @@ class PostScreenState extends State<PostScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(999),
+
                       side: const BorderSide(color: Colors.black, width: 2),
                     ),
                   ),

@@ -38,7 +38,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     // initialLocation: "/",
-    initialLocation: "/login",
+    initialLocation: "/",
     // refreshListenable: GoRouterRefreshStream(
     //   ref.read(authRepositoryProvider).authStateChanges(),
     // ),
