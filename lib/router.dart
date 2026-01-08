@@ -1,79 +1,137 @@
-import 'package:final_project/features/authentication/views/login_screen.dart';
-import 'package:final_project/features/mood/views/home_screen.dart';
-import 'package:final_project/features/mood/views/main_nav_screen.dart';
-import 'package:final_project/features/mood/views/post_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:final_project/features/authentication/views/login_screen.dart';
+// import 'package:final_project/features/mood/views/home_screen.dart';
+// import 'package:final_project/features/mood/views/main_nav_screen.dart';
+// import 'package:final_project/features/mood/views/post_screen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:go_router/go_router.dart';
+
+// // final routerProvider = Provider<GoRouter>((ref) {
+// //   return GoRouter(
+// //     initialLocation: '/',
+// //     routes: [
+// //       GoRoute(path: "/", builder: (context, state) => const MainNavScreen()),
+
+// //       // GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+// //       GoRoute(
+// //         path: '/search',
+// //         builder: (context, state) => const SearchScreen(),
+// //       ),
+// //     ],
+// //   );
+// // });
+
+// // class SearchScreen extends StatelessWidget {
+// //   const SearchScreen({super.key});
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(title: Text("Search")),
+// //       body: Center(child: Text("Search Screen")),
+// //     );
+// //   }
+// // }
 
 // final routerProvider = Provider<GoRouter>((ref) {
+//   // final auth = ref.watch(authStateProvider);
+
 //   return GoRouter(
-//     initialLocation: '/',
+//     // initialLocation: "/",
+//     initialLocation: "/",
+//     // refreshListenable: GoRouterRefreshStream(
+//     //   ref.read(authRepositoryProvider).authStateChanges(),
+//     // ),
+//     // redirect: (context, state) {
+//     //   final isLoggedIn = auth.valueOrNull != null;
+//     //   final goingToAuth = state.matchedLocation == "/login" ||
+//     //       state.matchedLocation == "/signup";
+
+//     //   if (!isLoggedIn && !goingToAuth) return "/login";
+//     //   if (isLoggedIn && goingToAuth) return "/";
+//     //   return null;
+//     // },
 //     routes: [
 //       GoRoute(path: "/", builder: (context, state) => const MainNavScreen()),
+//       GoRoute(path: "/login", builder: (context, state) => const LoginScreen()),
+//       // GoRoute(path: "/post", builder: (context, state) => const PostScreen()),
 
-//       // GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-//       GoRoute(
-//         path: '/search',
-//         builder: (context, state) => const SearchScreen(),
-//       ),
+//       // GoRoute(
+//       //   path: "/signup",
+//       //   builder: (context, state) => const SignUpScreen(),
+//       // ),
 //     ],
 //   );
 // });
 
-// class SearchScreen extends StatelessWidget {
-//   const SearchScreen({super.key});
+// // /// GoRouterRefreshStream 유틸
+// // class GoRouterRefreshStream extends ChangeNotifier {
+// //   GoRouterRefreshStream(Stream<dynamic> stream) {
+// //     _sub = stream.listen((_) => notifyListeners());
+// //   }
+// //   late final StreamSubscription<dynamic> _sub;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Search")),
-//       body: Center(child: Text("Search Screen")),
-//     );
-//   }
-// }
+// //   @override
+// //   void dispose() {
+// //     _sub.cancel();
+// //     super.dispose();
+// //   }
+// // }
+import 'dart:async';
+import 'package:final_project/features/authentication/repos/authentication_repository.dart';
+import 'package:final_project/features/authentication/views/login_screen.dart';
+import 'package:final_project/features/authentication/views/sing_up_screen.dart';
+import 'package:final_project/features/mood/views/main_nav_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  // final auth = ref.watch(authStateProvider);
+  final auth = ref.watch(authStateProvider); // AsyncValue<User?>
 
   return GoRouter(
-    // initialLocation: "/",
     initialLocation: "/",
-    // refreshListenable: GoRouterRefreshStream(
-    //   ref.read(authRepositoryProvider).authStateChanges(),
-    // ),
-    // redirect: (context, state) {
-    //   final isLoggedIn = auth.valueOrNull != null;
-    //   final goingToAuth = state.matchedLocation == "/login" ||
-    //       state.matchedLocation == "/signup";
+    refreshListenable: GoRouterRefreshStream(
+      ref.read(firebaseAuthProvider).authStateChanges(),
+    ),
+    redirect: (context, state) {
+      // loading 중에는 redirect 하지 않음 (무한 리다이렉트 방지)
+      if (auth.isLoading) return null;
 
-    //   if (!isLoggedIn && !goingToAuth) return "/login";
-    //   if (isLoggedIn && goingToAuth) return "/";
-    //   return null;
-    // },
+      final loggedIn = auth.asData?.value != null;
+
+      final goingToAuth =
+          state.matchedLocation == "/login" ||
+          state.matchedLocation == "/signup";
+
+      if (!loggedIn) {
+        return goingToAuth ? null : "/login";
+      }
+
+      if (goingToAuth) return "/";
+
+      return null;
+    },
     routes: [
       GoRoute(path: "/", builder: (context, state) => const MainNavScreen()),
       GoRoute(path: "/login", builder: (context, state) => const LoginScreen()),
-      // GoRoute(path: "/post", builder: (context, state) => const PostScreen()),
-
-      // GoRoute(
-      //   path: "/signup",
-      //   builder: (context, state) => const SignUpScreen(),
-      // ),
+      GoRoute(
+        path: "/signup",
+        builder: (context, state) => const SingUpScreen(),
+      ),
     ],
   );
 });
 
-// /// GoRouterRefreshStream 유틸
-// class GoRouterRefreshStream extends ChangeNotifier {
-//   GoRouterRefreshStream(Stream<dynamic> stream) {
-//     _sub = stream.listen((_) => notifyListeners());
-//   }
-//   late final StreamSubscription<dynamic> _sub;
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    _sub = stream.listen((_) => notifyListeners());
+  }
+  late final StreamSubscription<dynamic> _sub;
 
-//   @override
-//   void dispose() {
-//     _sub.cancel();
-//     super.dispose();
-//   }
-// }
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}

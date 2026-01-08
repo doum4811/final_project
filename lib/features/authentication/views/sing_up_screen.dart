@@ -1,15 +1,18 @@
+import 'package:final_project/features/authentication/view_models/auth_view_model.dart';
 import 'package:final_project/features/authentication/views/widgets/pill_button.dart';
 import 'package:final_project/features/authentication/views/widgets/round_input.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class SingUpScreen extends StatefulWidget {
+class SingUpScreen extends ConsumerStatefulWidget {
   const SingUpScreen({super.key});
 
   @override
-  State<SingUpScreen> createState() => _SingUpScreenState();
+  SingUpScreenState createState() => SingUpScreenState();
 }
 
-class _SingUpScreenState extends State<SingUpScreen> {
+class SingUpScreenState extends ConsumerState<SingUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -24,14 +27,24 @@ class _SingUpScreenState extends State<SingUpScreen> {
     super.dispose();
   }
 
-  void _onEnter() {
-    // TODO: Firebase signIn 연결
-    debugPrint("Enter: ${_emailController.text}");
+  Future<void> _onEnter() async {
+    await ref
+        .read(authViewModelProvider.notifier)
+        .signUp(_emailController.text.trim(), _passwordController.text.trim());
+
+    if (!mounted) return;
+
+    final state = ref.read(authViewModelProvider);
+    if (state.hasError) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.error.toString())));
+    }
+    // 성공 시 → redirect가 Home으로 이동
   }
 
   void _onCreateAccount() {
-    // TODO: GoRouter로 signup 이동
-    debugPrint("Go to SignUp");
+    context.go("/login");
   }
 
   @override

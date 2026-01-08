@@ -85,10 +85,10 @@ class PostScreenState extends State<PostScreen> {
               child: Container(
                 height: 170, // 두 번째 스샷 느낌: 낮고 납작
                 decoration: BoxDecoration(
-                  color: kBgColor, // ✅ 중요: 박스 배경색 채우기
+                  color: kBgColor, // 중요: 박스 배경색 채우기
                   border: Border.all(color: kBorderColor, width: 2.2),
                   borderRadius: BorderRadius.circular(kBoxRadius),
-                  // ✅ 두 번째 스샷은 그림자 거의 없음 → 제거
+                  // 두 번째 스샷은 그림자 거의 없음 → 제거
                   boxShadow: const [kShadow],
                   // boxShadow: const [kSoftShadow],
                 ),
@@ -96,7 +96,7 @@ class PostScreenState extends State<PostScreen> {
                 child: TextField(
                   controller: _controller,
                   maxLines: null,
-                  expands: true, // ✅ 박스 높이만큼 채우기
+                  expands: true, // 박스 높이만큼 채우기
                   decoration: const InputDecoration(
                     hintText: "Write it down here!",
                     border: InputBorder.none,
