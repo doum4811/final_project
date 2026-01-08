@@ -1,32 +1,18 @@
+import 'package:final_project/features/authentication/view_models/auth_view_model.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-// class HomeScreen extends StatelessWidget {
-//   const HomeScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Home")),
-//       body: Center(
-//         child: ElevatedButton(
-//           onPressed: () => context.go('/search'),
-//           child: const Text("Go Search"),
-//         ),
-//       ),
-//     );
-//   }
-// }
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static const _bg = Color(0xFFE9E1BE);
   static const _card = Color(0xFF6FBFAF);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // TODO: 나중에 Firestore Stream으로 바꾸면 됨
     final dummy = const [
       (
@@ -42,12 +28,51 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 18),
-          const Text(
-            "🔥 MOOD 🔥",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.6,
+          // const Text(
+          //   "🔥 MOOD 🔥",
+          //   style: TextStyle(
+          //     fontSize: 18,
+          //     fontWeight: FontWeight.w700,
+          //     letterSpacing: 0.6,
+          //   ),
+          // ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              height: 38,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Center(
+                    child: const Text(
+                      "🔥 MOOD 🔥",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+
+                  Positioned(
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        ref.read(authViewModelProvider.notifier).signOut();
+                        // redirect가 /login 으로 자동 이동
+                      },
+                      child: const Text(
+                        "Log out",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 18),

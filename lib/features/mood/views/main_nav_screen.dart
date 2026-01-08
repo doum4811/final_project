@@ -20,7 +20,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
   int _selectedIndex = 0;
 
   void _onTap(int index) {
-    // ✅ TA 힌트: route 이동 + index setState 둘 다
+    // route 이동 + index setState 둘 다
     context.go("/${MainNavScreen.tabs[index]}");
     setState(() => _selectedIndex = index);
   }
