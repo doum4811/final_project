@@ -1,4 +1,7 @@
+import 'package:final_project/features/authentication/repos/authentication_repository.dart';
 import 'package:final_project/features/authentication/view_models/auth_view_model.dart';
+import 'package:final_project/features/mood/view_models/home_view_model.dart';
+import 'package:final_project/features/mood/widgets/mood_header.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,137 +17,158 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: 나중에 Firestore Stream으로 바꾸면 됨
-    final dummy = const [
-      (
-        "😍",
-        "Today I feel amazing! I really like Flutter, I love building beautiful things!",
-        "30 minutes ago",
-      ),
-      ("😭", "서울에 비가 많이 와요 ㅠㅠ", "1 day ago"),
-      ("🥳", "It was my birthday today! I feel great!", "2 days ago"),
-    ];
+    // final dummy = const [
+    //   (
+    //     "😍",
+    //     "Today I feel amazing! I really like Flutter, I love building beautiful things!",
+    //     "30 minutes ago",
+    //   ),
+    //   ("😭", "서울에 비가 많이 와요 ㅠㅠ", "1 day ago"),
+    //   ("🥳", "It was my birthday today! I feel great!", "2 days ago"),
+    // ];
+
+    final moods = ref.watch(moodListProvider);
+
+    final auth = ref.watch(authStateProvider);
+    debugPrint("AUTH: $auth");
+    debugPrint("MOODS: $moods");
 
     return SafeArea(
       child: Column(
         children: [
-          const SizedBox(height: 18),
-          // const Text(
-          //   "🔥 MOOD 🔥",
-          //   style: TextStyle(
-          //     fontSize: 18,
-          //     fontWeight: FontWeight.w700,
-          //     letterSpacing: 0.6,
-          //   ),
-          // ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              height: 38,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Center(
-                    child: const Text(
-                      "🔥 MOOD 🔥",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
-                  ),
-
-                  Positioned(
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        ref.read(authViewModelProvider.notifier).signOut();
-                        // redirect가 /login 으로 자동 이동
-                      },
-                      child: const Text(
-                        "Log out",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          MoodHeader(
+            right: GestureDetector(
+              onTap: () {
+                ref.read(authViewModelProvider.notifier).signOut();
+              },
+              child: const Text(
+                "Log out",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 18),
 
+          // Expanded(
+          //   child: ListView.separated(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          //     itemCount: dummy.length,
+          //     separatorBuilder: (_, __) => const SizedBox(height: 18),
+          //     itemBuilder: (context, index) {
+          //       final (emoji, text, time) = dummy[index];
+
+          //       return _MoodCard(
+          //         emoji: emoji,
+          //         text: text,
+          //         timeAgo: time,
+          //         cardColor: _card,
+          //         // onLongPress: () async {
+          //         //   // TODO: 나중에 삭제 다이얼로그 + Firestore delete로 교체
+          //         //   await showDialog(
+          //         //     context: context,
+          //         //     builder: (_) => AlertDialog(
+          //         //       title: const Text("Delete note"),
+          //         //       content: const Text(
+          //         //         "Are you sure you want to do this?",
+          //         //       ),
+          //         //       actions: [
+          //         //         TextButton(
+          //         //           onPressed: () => Navigator.pop(context),
+          //         //           child: const Text("Cancel"),
+          //         //         ),
+          //         //         TextButton(
+          //         //           onPressed: () => Navigator.pop(context),
+          //         //           child: const Text("Delete"),
+          //         //         ),
+          //         //       ],
+          //         //     ),
+          //         //   );
+          //         // },
+          //         onLongPress: () async {
+          //           final result = await showCupertinoModalPopup<String>(
+          //             context: context,
+          //             builder: (context) => CupertinoActionSheet(
+          //               title: const Text("Delete note"),
+          //               message: const Text(
+          //                 "Are you sure you want to do this?",
+          //               ),
+          //               actions: [
+          //                 CupertinoActionSheetAction(
+          //                   isDestructiveAction: true,
+          //                   onPressed: () => Navigator.pop(context, "delete"),
+          //                   child: const Text("Delete"),
+          //                 ),
+          //               ],
+          //               cancelButton: CupertinoActionSheetAction(
+          //                 onPressed: () => Navigator.pop(context, "cancel"),
+          //                 child: const Text("Cancel"),
+          //               ),
+          //             ),
+          //           );
+
+          //           if (result == "delete") {
+          //             // TODO: Firestore delete 연결
+          //           }
+          //         },
+          //       );
+          //     },
+          //   ),
+          // ),
+          // // 하단 바 위에 얇은 라인 느낌
+          // Container(height: 1.2, color: Colors.black),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              itemCount: dummy.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 18),
-              itemBuilder: (context, index) {
-                final (emoji, text, time) = dummy[index];
+            child: moods.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text("에러: $e")),
+              data: (list) => ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                itemCount: list.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 18),
+                itemBuilder: (context, index) {
+                  final item = list[index];
 
-                return _MoodCard(
-                  emoji: emoji,
-                  text: text,
-                  timeAgo: time,
-                  cardColor: _card,
-                  // onLongPress: () async {
-                  //   // TODO: 나중에 삭제 다이얼로그 + Firestore delete로 교체
-                  //   await showDialog(
-                  //     context: context,
-                  //     builder: (_) => AlertDialog(
-                  //       title: const Text("Delete note"),
-                  //       content: const Text(
-                  //         "Are you sure you want to do this?",
-                  //       ),
-                  //       actions: [
-                  //         TextButton(
-                  //           onPressed: () => Navigator.pop(context),
-                  //           child: const Text("Cancel"),
-                  //         ),
-                  //         TextButton(
-                  //           onPressed: () => Navigator.pop(context),
-                  //           child: const Text("Delete"),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   );
-                  // },
-                  onLongPress: () async {
-                    final result = await showCupertinoModalPopup<String>(
-                      context: context,
-                      builder: (context) => CupertinoActionSheet(
-                        title: const Text("Delete note"),
-                        message: const Text(
-                          "Are you sure you want to do this?",
-                        ),
-                        actions: [
-                          CupertinoActionSheetAction(
-                            isDestructiveAction: true,
-                            onPressed: () => Navigator.pop(context, "delete"),
-                            child: const Text("Delete"),
+                  return _MoodCard(
+                    emoji: item.emoji,
+                    text: item.description,
+                    timeAgo: _timeAgo(item.createdAt), // 아래 helper
+                    cardColor: _card,
+                    onLongPress: () async {
+                      final result = await showCupertinoModalPopup<String>(
+                        context: context,
+                        builder: (context) => CupertinoActionSheet(
+                          title: const Text("Delete note"),
+                          message: const Text(
+                            "Are you sure you want to do this?",
                           ),
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                          onPressed: () => Navigator.pop(context, "cancel"),
-                          child: const Text("Cancel"),
+                          actions: [
+                            CupertinoActionSheetAction(
+                              isDestructiveAction: true,
+                              onPressed: () => Navigator.pop(context, "delete"),
+                              child: const Text("Delete"),
+                            ),
+                          ],
+                          cancelButton: CupertinoActionSheetAction(
+                            onPressed: () => Navigator.pop(context, "cancel"),
+                            child: const Text("Cancel"),
+                          ),
                         ),
-                      ),
-                    );
+                      );
 
-                    if (result == "delete") {
-                      // TODO: Firestore delete 연결
-                    }
-                  },
-                );
-              },
+                      if (result == "delete") {
+                        await ref.read(homeViewModelProvider).delete(item.id);
+                      }
+                    },
+                  );
+                },
+              ),
             ),
           ),
-
-          // 하단 바 위에 얇은 라인 느낌
-          Container(height: 1.2, color: Colors.black),
         ],
       ),
     );
@@ -207,4 +231,11 @@ class _MoodCard extends StatelessWidget {
       ],
     );
   }
+}
+
+String _timeAgo(DateTime dt) {
+  final diff = DateTime.now().difference(dt);
+  if (diff.inMinutes < 60) return "${diff.inMinutes} minutes ago";
+  if (diff.inHours < 24) return "${diff.inHours} hours ago";
+  return "${diff.inDays} days ago";
 }

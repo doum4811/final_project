@@ -1,15 +1,18 @@
+import 'package:final_project/features/mood/view_models/post_view_model.dart';
+import 'package:final_project/features/mood/widgets/mood_header.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PostScreen extends StatefulWidget {
+class PostScreen extends ConsumerStatefulWidget {
   const PostScreen({super.key});
 
   @override
-  State<PostScreen> createState() => PostScreenState();
+  PostScreenState createState() => PostScreenState();
 }
 
-class PostScreenState extends State<PostScreen> {
+class PostScreenState extends ConsumerState<PostScreen> {
   static const _bg = Color(0xFFE9E1BE);
   static const _pink = Color(0xFFFFA6E8);
 
@@ -24,10 +27,35 @@ class PostScreenState extends State<PostScreen> {
     super.dispose();
   }
 
-  void _post() {
-    // TODO: Firestore createMood 연결
-    debugPrint("POST: $_emoji / ${_controller.text}");
-    _controller.clear();
+  // void _post() {
+  //   // TODO: Firestore createMood 연결
+  //   debugPrint("POST: $_emoji / ${_controller.text}");
+  //   _controller.clear();
+  // }
+  Future<void> _post() async {
+    final desc = _controller.text.trim();
+    if (desc.isEmpty) return;
+
+    await ref
+        .read(postViewModelProvider.notifier)
+        .post(emoji: _emoji, description: desc);
+
+    final state = ref.read(postViewModelProvider);
+    if (!mounted) return;
+
+    state.when(
+      data: (_) {
+        _controller.clear();
+        // Post 후 Home으로 이동
+        context.go("/"); // 또는 MainNav 방식에 맞춰 "/home" 등
+      },
+      loading: () {},
+      error: (e, _) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      },
+    );
   }
 
   @override
@@ -37,16 +65,7 @@ class PostScreenState extends State<PostScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 18),
-            const Text(
-              "🔥 MOOD 🔥",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.6,
-              ),
-            ),
-            const SizedBox(height: 18),
+            const MoodHeader(), // right 없음
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
